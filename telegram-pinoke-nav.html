@@ -1,0 +1,1200 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pinoke · Telegram 导航</title>
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-soft: #0b1020;
+      --card-bg: #101528;
+      --card-hover: #181f3a;
+      --accent: #4f8cff;
+      --accent-soft: rgba(79, 140, 255, 0.15);
+      --text-main: #f5f7ff;
+      --text-sub: #9aa4c6;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.65);
+      --radius-xl: 20px;
+      --radius-full: 999px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px 12px 26px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+        sans-serif;
+      background: radial-gradient(circle at top, #141b3f 0, #050816 46%, #02030a 100%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .top-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .chip-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+    }
+
+    .chip-badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      background: rgba(148, 163, 184, 0.16);
+      color: var(--text-sub);
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    .category {
+      margin-bottom: 14px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(
+          145deg,
+          rgba(148, 163, 255, 0.06),
+          rgba(15, 23, 42, 0.9)
+        );
+      border: 1px solid rgba(148, 163, 255, 0.18);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      backdrop-filter: blur(22px);
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .category-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .category-icon-wrap {
+      width: 26px;
+      height: 26px;
+      border-radius: var(--radius-full);
+      background: radial-gradient(circle at 30% 15%, #ffffff 0, #93c5fd 26%, #1d4ed8 80%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 6px 12px rgba(37, 99, 235, 0.6);
+    }
+
+    .category-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      color: #e5e7ff;
+    }
+
+    .category-sub {
+      font-size: 11px;
+      color: var(--text-sub);
+      opacity: 0.9;
+    }
+
+    .category-extra {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .cat-count {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 255, 0.4);
+    }
+
+    .chevron {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 255, 0.5);
+      transition: transform 0.18s ease, background 0.18s ease;
+      flex-shrink: 0;
+    }
+
+    .chevron svg {
+      width: 10px;
+      height: 10px;
+      stroke: #cbd5f5;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    .category-header.open .chevron {
+      transform: rotate(90deg);
+      background: rgba(79, 140, 255, 0.2);
+    }
+
+    .category-body {
+      padding: 4px 10px 10px;
+      border-top: 1px solid rgba(148, 163, 255, 0.24);
+      background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 62%),
+        radial-gradient(circle at bottom right, rgba(15, 118, 110, 0.2), transparent 60%);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (min-width: 640px) {
+      body {
+        padding: 18px 16px 32px;
+      }
+      .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .card {
+      position: relative;
+      padding: 10px 8px 9px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.08), transparent 58%),
+        var(--card-bg);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 255, 0.26);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.16s ease, box-shadow 0.16s ease,
+        border-color 0.16s ease, background 0.16s ease;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      background: radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.12), transparent 62%),
+        var(--card-hover);
+      border-color: rgba(96, 165, 250, 0.92);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.95);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .icon-pill {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 15%, #ffffff 0, #bae6fd 26%, #0ea5e9 72%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 7px 16px rgba(14, 165, 233, 0.7);
+      flex-shrink: 0;
+    }
+
+    .icon-pill.ai {
+      background: radial-gradient(circle at 30% 15%, #ffffff 0, #f9a8d4 26%, #a855f7 80%);
+      box-shadow: 0 7px 16px rgba(168, 85, 247, 0.75);
+    }
+
+    .icon-pill.dev {
+      background: radial-gradient(circle at 30% 15%, #ffffff 0, #bbf7d0 26%, #22c55e 80%);
+      box-shadow: 0 7px 16px rgba(34, 197, 94, 0.75);
+    }
+
+    .icon-pill.sec {
+      background: radial-gradient(circle at 30% 15%, #ffffff 0, #bfdbfe 26%, #2563eb 80%);
+      box-shadow: 0 7px 16px rgba(37, 99, 235, 0.75);
+    }
+
+    .icon-pill.media {
+      background: radial-gradient(circle at 30% 15%, #ffffff 0, #fed7aa 26%, #f97316 80%);
+      box-shadow: 0 7px 16px rgba(249, 115, 22, 0.75);
+    }
+
+    .icon-pill.money {
+      background: radial-gradient(circle at 30% 15%, #ffffff 0, #bbf7d0 26%, #16a34a 80%);
+      box-shadow: 0 7px 16px rgba(22, 163, 74, 0.75);
+    }
+
+    .icon-pill.book {
+      background: radial-gradient(circle at 30% 15%, #ffffff 0, #e5e7eb 26%, #6b7280 80%);
+      box-shadow: 0 7px 16px rgba(75, 85, 99, 0.75);
+    }
+
+    .card-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: #e5e7ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      margin-top: 1px;
+    }
+
+    .card-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 255, 0.65);
+      background: rgba(15, 23, 42, 0.96);
+      color: #cbd5ff;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-pill {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.86);
+      color: var(--text-sub);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      white-space: nowrap;
+    }
+
+    .card-desc {
+      font-size: 11px;
+      color: var(--text-sub);
+      line-height: 1.3;
+      margin-top: 2px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-link-hint {
+      position: absolute;
+      right: 6px;
+      bottom: 5px;
+      font-size: 9px;
+      color: rgba(148, 163, 255, 0.9);
+      opacity: 0.88;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .card-link-hint svg {
+      width: 8px;
+      height: 8px;
+      stroke: currentColor;
+      stroke-width: 1.3;
+      fill: none;
+    }
+
+    .footer {
+      margin-top: 14px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--text-sub);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-logo {
+      width: 18px;
+      height: 18px;
+      border-radius: 8px;
+      background: conic-gradient(
+        from 210deg,
+        #4f46e5,
+        #06b6d4,
+        #f97316,
+        #ec4899,
+        #4f46e5
+      );
+      position: relative;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.95);
+      flex-shrink: 0;
+    }
+
+    .brand-logo::before {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: 6px;
+      background: radial-gradient(circle at 30% 20%, #ffffff, #e5e7eb 38%, #0f172a 100%);
+    }
+
+    .brand-text-main {
+      font-weight: 600;
+      color: #e5e7ff;
+    }
+
+    .hint {
+      text-align: right;
+    }
+
+    .hint span {
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="top-meta">
+      <div class="chip">
+        <span class="chip-dot"></span>
+        <span>Telegram 高质量频道导航 · 离线可用</span>
+      </div>
+      <div class="chip-badge">长按 → 浏览器中保存 / 加到主屏幕</div>
+    </div>
+    <div class="subtitle">
+      覆盖科技趋势、AI 工具、运维 / 云原生、安全测试、自媒体运营与投资资讯。全部为公开频道，点击卡片即可跳转 Telegram。
+    </div>
+
+    <!-- 分类 1：科技 / 数码 / 工具 -->
+    <section class="category" data-category>
+      <div class="category-header open" data-toggle>
+        <div class="category-main">
+          <div class="category-icon-wrap">
+            <svg viewBox="0 0 24 24">
+              <defs>
+                <linearGradient id="cat-tech" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#eff6ff" />
+                  <stop offset="1" stop-color="#60a5fa" />
+                </linearGradient>
+              </defs>
+              <rect x="3" y="5" width="18" height="13" rx="3" fill="url(#cat-tech)" />
+              <rect x="7" y="9" width="6" height="2.4" rx="1.2" fill="#1d4ed8" opacity="0.85" />
+              <circle cx="17" cy="10" r="1.3" fill="#1d4ed8" opacity="0.9" />
+              <rect x="10" y="19" width="4" height="1.1" rx="0.55" fill="#93c5fd" />
+            </svg>
+          </div>
+          <div class="category-title">
+            <span>科技 / 数码 / 工具</span>
+            <span class="category-sub">关注科技动态与实用工具，提高工作与生活效率</span>
+          </div>
+        </div>
+        <div class="category-extra">
+          <span class="cat-count">4 个频道</span>
+          <span class="chevron">
+            <svg viewBox="0 0 24 24">
+              <polyline points="9 6 15 12 9 18" />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="category-body">
+        <div class="grid">
+          <a class="card" href="https://t.me/sspai_nex" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4" y="5" width="16" height="11" rx="2.5" fill="#0f172a" opacity="0.9" />
+                  <rect x="7" y="8" width="5.6" height="2.4" rx="1.2" fill="#38bdf8" />
+                  <circle cx="16.5" cy="9.2" r="1.1" fill="#22c55e" />
+                  <rect x="10" y="18" width="4" height="1.2" rx="0.6" fill="#e5e7eb" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">少数派精选资讯</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">App / 数码 / 效率提升</span>
+                  <span class="card-pill">日更</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              科技与生活方式内容，涵盖效率工具、应用推荐与实用教程。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/tech_news_cn" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3.5" y="6" width="17" height="11" rx="2.5" fill="#020617" />
+                  <path d="M7 9h10" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round" />
+                  <path d="M7 11.8h6" stroke="#a5b4fc" stroke-width="1.4" stroke-linecap="round" />
+                  <circle cx="16.5" cy="12" r="1.1" fill="#22c55e" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">TechFeed 科技快讯</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">AI / 科技新闻</span>
+                  <span class="card-pill">快讯</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              聚合国内外科技与 AI 行业资讯，适合快速了解当下热点。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/technewschina" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4" y="4.5" width="16" height="13" rx="3" fill="#020617" />
+                  <path d="M7 9h9" stroke="#60a5fa" stroke-width="1.3" stroke-linecap="round" />
+                  <path d="M7 11.8h5.4" stroke="#a5b4fc" stroke-width="1.3" stroke-linecap="round" />
+                  <rect x="7" y="14.4" width="8" height="1.2" rx="0.6" fill="#4b5563" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">科技聚合快讯</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">互联网 / 行业动态</span>
+                  <span class="card-pill">精简</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              聚焦国内互联网与行业趋势，适合通勤碎片时间浏览。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/toolplanet" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill">
+                <svg viewBox="0 0 24 24">
+                  <path d="M7 5.5h10l-1 4.8H8z" fill="#0ea5e9" />
+                  <rect x="8" y="11" width="8" height="6.5" rx="1.4" fill="#020617" />
+                  <circle cx="12" cy="14.4" r="1.2" fill="#e5e7eb" />
+                  <path d="M5.5 18.5h13" stroke="#38bdf8" stroke-width="1.2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">工具精选 ToolsHub</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">在线工具 / 实用脚本</span>
+                  <span class="card-pill">实用</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              收集各类在线工具与桌面小工具，能明显提升日常工作效率。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 分类 2：AI / 创作 / Prompt -->
+    <section class="category" data-category>
+      <div class="category-header open" data-toggle>
+        <div class="category-main">
+          <div class="category-icon-wrap">
+            <svg viewBox="0 0 24 24">
+              <defs>
+                <radialGradient id="cat-ai" cx="30%" cy="20%" r="80%">
+                  <stop offset="0" stop-color="#fdf2ff" />
+                  <stop offset="0.4" stop-color="#f9a8d4" />
+                  <stop offset="1" stop-color="#a855f7" />
+                </radialGradient>
+              </defs>
+              <rect x="5" y="4.5" width="14" height="15" rx="7" fill="url(#cat-ai)" />
+              <circle cx="12" cy="10" r="2.4" fill="#0f172a" opacity="0.9" />
+              <path d="M8.2 16.5c.7-1.3 2.2-2.2 3.8-2.2s3.1.9 3.8 2.2" stroke="#0f172a" stroke-width="1.4" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="category-title">
+            <span>AI 工具 / Prompt / 创作</span>
+            <span class="category-sub">生成式 AI 提示词、工具与创作灵感，适合内容创作者</span>
+          </div>
+        </div>
+        <div class="category-extra">
+          <span class="cat-count">4 个频道</span>
+          <span class="chevron">
+            <svg viewBox="0 0 24 24">
+              <polyline points="9 6 15 12 9 18" />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="category-body">
+        <div class="grid">
+          <a class="card" href="https://t.me/aitoolschina" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill ai">
+                <svg viewBox="0 0 24 24">
+                  <rect x="6" y="4.5" width="12" height="15" rx="6" fill="#0f172a" opacity="0.9" />
+                  <circle cx="12" cy="10" r="2.3" fill="#f97316" />
+                  <path d="M9 15c.6-.8 1.5-1.3 3-1.3 1.5 0 2.4.5 3 1.3" stroke="#e5e7eb" stroke-width="1.2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">AI 工具箱</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">模型 / 网站 / 插件合集</span>
+                  <span class="card-pill">创作</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              收集实用 AI 工具与网站，适合剪辑、副业、自动化办公等多场景。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/promptchina" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill ai">
+                <svg viewBox="0 0 24 24">
+                  <rect x="5" y="5" width="14" height="14" rx="4" fill="#0f172a" />
+                  <path d="M9 10.2c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2" stroke="#e5e7eb" stroke-width="1.2" stroke-linecap="round" />
+                  <path d="M9 14.5c.5-.7 1.3-1.2 2-1.2s1.5.5 2 1.2" stroke="#f472b6" stroke-width="1.2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">Prompt 原子库</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">GPT / MJ / 图文提示词</span>
+                  <span class="card-pill">模板</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              提供针对不同场景的高质量 Prompt，可直接复制到 ChatGPT、MJ 等工具使用。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/aisora_lab" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill ai">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4.5" y="6" width="15" height="11.5" rx="3" fill="#020617" />
+                  <path d="M7.2 9.2h9.6" stroke="#a855f7" stroke-width="1.3" stroke-linecap="round" />
+                  <path d="M8 12h5" stroke="#f97316" stroke-width="1.3" stroke-linecap="round" />
+                  <circle cx="16.3" cy="12.1" r="1" fill="#22c55e" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">Sora & AI 视频实验室</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">视频生成 / 剪辑辅助</span>
+                  <span class="card-pill">短视频</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              专注 AI 视频生成、剪辑思路与案例展示，对做自媒体视频非常有帮助。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/creator_tools" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill media">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4" y="6" width="16" height="12" rx="3" fill="#0f172a" />
+                  <path d="M9 9.5h6" stroke="#fb923c" stroke-width="1.3" stroke-linecap="round" />
+                  <path d="M9 12.3h3.8" stroke="#fed7aa" stroke-width="1.3" stroke-linecap="round" />
+                  <path d="M15 12l2.6 1.5L15 15z" fill="#f97316" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">创作者工具与素材</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">BGM / 模板 / 素材</span>
+                  <span class="card-pill">运营</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              为自媒体创作者整理各种可直接使用的模板、配乐与视觉素材。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 分类 3：运维 / DevOps / 云原生 / 安全 -->
+    <section class="category" data-category>
+      <div class="category-header open" data-toggle>
+        <div class="category-main">
+          <div class="category-icon-wrap">
+            <svg viewBox="0 0 24 24">
+              <defs>
+                <linearGradient id="cat-dev" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#bbf7d0" />
+                  <stop offset="1" stop-color="#22c55e" />
+                </linearGradient>
+              </defs>
+              <rect x="4.3" y="6" width="15.4" height="11.5" rx="2.8" fill="#020617" />
+              <rect x="7.3" y="8.7" width="9.4" height="4.6" rx="1.4" fill="url(#cat-dev)" />
+              <path d="M8.4 15.7h7.2" stroke="#22c55e" stroke-width="1.2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="category-title">
+            <span>运维 / DevOps / 云原生 / 安全</span>
+            <span class="category-sub">贴近工作场景的技术频道，涵盖 Linux、K8s、CI/CD 与攻防安全</span>
+          </div>
+        </div>
+        <div class="category-extra">
+          <span class="cat-count">6 个频道</span>
+          <span class="chevron">
+            <svg viewBox="0 0 24 24">
+              <polyline points="9 6 15 12 9 18" />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="category-body">
+        <div class="grid">
+          <a class="card" href="https://t.me/linuxops" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill dev">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4.5" y="5" width="15" height="12.5" rx="3" fill="#020617" />
+                  <path d="M8 11 10.8 9M8 13l2.8 2" stroke="#4ade80" stroke-width="1.3" stroke-linecap="round" />
+                  <path d="M13.2 9h2.4v6h-2.4" stroke="#bbf7d0" stroke-width="1.3" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">Linux Ops 技巧</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">Linux / 运维实战</span>
+                  <span class="card-pill">生产可用</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              分享日常运维排障、系统优化与常见架构方案，对你当前服务器管理非常适配。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/devops_cn" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill dev">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4" y="5" width="16" height="12" rx="3" fill="#020617" />
+                  <path d="M8 11 10.4 9M8 13l2.4 2" stroke="#22c55e" stroke-width="1.2" stroke-linecap="round" />
+                  <path d="M13.6 9h2.4v6h-2.4" stroke="#a7f3d0" stroke-width="1.2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">DevOps News</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">CI/CD / K8s / 监控</span>
+                  <span class="card-pill">DevOps</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              关注自动化部署、监控与现代 DevOps 流程，适合你优化现有 1dve / CI 流程时参考。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/kubernetes_cn" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill dev">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4.5" y="5" width="15" height="12.5" rx="3" fill="#020617" />
+                  <circle cx="12" cy="11.5" r="3.2" stroke="#4ade80" stroke-width="1.2" fill="none" />
+                  <path d="M12 8.3V7M9.3 9.4 8.4 8.5M8.6 12H7.5M9.3 13.6l-.9.9M12 14.7V16M14.7 13.6l.9.9M15.4 12h1.1M14.7 9.4l.9-.9" stroke="#86efac" stroke-width="1.1" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">Kubernetes 中文资讯</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">K8s / 云原生生态</span>
+                  <span class="card-pill">云原生</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              追踪 K8s 版本更新与实践分享，有助于你系统化过渡到云原生运维方向。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/infosec_cn" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill sec">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 4.5 7 6.8v4.8c0 3.2 2.1 6 5 7 2.9-1 5-3.8 5-7V6.8z" fill="#020617" />
+                  <path d="M10 10.5c0-1.1.9-2 2-2s2 .9 2 2-1 2.2-2 3c-1-.8-2-1.9-2-3z" fill="#60a5fa" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">InfoSec 安全快讯</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">漏洞 / 安全情报</span>
+                  <span class="card-pill">安全</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              提供最新安全漏洞与攻防资讯，帮助你评估业务暴露面与加固方向。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/redteam_tips" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill sec">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 4.8 7.2 7v4.6c0 2.9 1.9 5.4 4.8 6.4 2.9-1 4.8-3.5 4.8-6.4V7z" fill="#020617" />
+                  <path d="M10 10.7 11.2 9l1.3 1.7 1.5-1.3" stroke="#60a5fa" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">Red Team Tips</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">渗透 / 实战经验</span>
+                  <span class="card-pill">红队</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              分享攻防演练、渗透测试经验，对你做 WAF、防护验证与安全测试很有启发。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/sec_tools" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill sec">
+                <svg viewBox="0 0 24 24">
+                  <rect x="5" y="6" width="14" height="11.5" rx="3" fill="#020617" />
+                  <path d="M8 10.2h8" stroke="#60a5fa" stroke-width="1.2" stroke-linecap="round" />
+                  <path d="M8 12.9h5" stroke="#a5b4fc" stroke-width="1.2" stroke-linecap="round" />
+                  <circle cx="15.8" cy="12.9" r="1.1" fill="#22c55e" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">安全工具资源库</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">扫描 / PoC / 工具</span>
+                  <span class="card-pill">工具集</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              汇总各类安全测试相关工具与 PoC，适合作为你测试环境与学习环境的工具仓。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 分类 4：自媒体 / 副业 / 投资 -->
+    <section class="category" data-category>
+      <div class="category-header open" data-toggle>
+        <div class="category-main">
+          <div class="category-icon-wrap">
+            <svg viewBox="0 0 24 24">
+              <defs>
+                <linearGradient id="cat-media" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#fed7aa" />
+                  <stop offset="1" stop-color="#f97316" />
+                </linearGradient>
+              </defs>
+              <rect x="4.2" y="6" width="15.6" height="11.5" rx="3" fill="#020617" />
+              <rect x="7" y="8.8" width="8" height="4.2" rx="1.4" fill="url(#cat-media)" />
+              <path d="M15.5 11.1 17.6 12.2 15.5 13.3z" fill="#fee2e2" />
+            </svg>
+          </div>
+          <div class="category-title">
+            <span>自媒体运营 / 副业 / 投资</span>
+            <span class="category-sub">围绕内容创作、副业方向与稳健投资的频道选择</span>
+          </div>
+        </div>
+        <div class="category-extra">
+          <span class="cat-count">6 个频道</span>
+          <span class="chevron">
+            <svg viewBox="0 0 24 24">
+              <polyline points="9 6 15 12 9 18" />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="category-body">
+        <div class="grid">
+          <a class="card" href="https://t.me/newmedia_china" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill media">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4.5" y="6" width="15" height="11.5" rx="3" fill="#020617" />
+                  <path d="M8 9.5h7.2" stroke="#fb923c" stroke-width="1.2" stroke-linecap="round" />
+                  <path d="M8 12h4.4" stroke="#fed7aa" stroke-width="1.2" stroke-linecap="round" />
+                  <circle cx="15.8" cy="11.8" r="1" fill="#f97316" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">新媒体运营精选</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">选题 / 标题 / 爆款拆解</span>
+                  <span class="card-pill">增长</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              拆解热门内容与运营策略，适合你做小红书、今日头条等账号运营。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/sidejob_cn" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill media">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4.2" y="5.5" width="15.6" height="12.5" rx="3" fill="#020617" />
+                  <path d="M8 10.3h5.6" stroke="#fb923c" stroke-width="1.2" stroke-linecap="round" />
+                  <path d="M8 13h3.6" stroke="#fed7aa" stroke-width="1.2" stroke-linecap="round" />
+                  <path d="M14.5 9.8h1.6v4h-1.6" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">副业导航 SideJobs</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">副业方向 / 案例</span>
+                  <span class="card-pill">思路</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              提供多种副业路径与实践经验，帮助你寻找适合自身节奏的变现方式。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/contentideas_cn" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill media">
+                <svg viewBox="0 0 24 24">
+                  <rect x="5" y="5.5" width="14" height="12.5" rx="3" fill="#020617" />
+                  <path d="M9 9.5h5.2" stroke="#fb923c" stroke-width="1.2" stroke-linecap="round" />
+                  <path d="M9 12h3.2" stroke="#fed7aa" stroke-width="1.2" stroke-linecap="round" />
+                  <path d="M10.2 15h3.6" stroke="#f97316" stroke-width="1.2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">爆款内容灵感库</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">灵感 / 文案 / 选题</span>
+                  <span class="card-pill">灵感</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              为图文和短视频创作提供主题灵感与角度参考，减少你“今天发什么”的纠结。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/finance_digest" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill money">
+                <svg viewBox="0 0 24 24">
+                  <rect x="4.5" y="6" width="15" height="11.5" rx="3" fill="#020617" />
+                  <path d="M8 13.2 10.4 10l2 2.6L15.5 9" stroke="#4ade80" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">财经简报</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">宏观 / 行业热点</span>
+                  <span class="card-pill">节奏</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              汇总每日重要经济与市场信息，为你做股票与 ETF 决策提供背景信息。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/etf_research" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill money">
+                <svg viewBox="0 0 24 24">
+                  <rect x="5" y="6" width="14" height="11.5" rx="3" fill="#020617" />
+                  <path d="M7.8 14.5 10 11.2l1.8 2.2 2.4-3" stroke="#4ade80" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">ETF 研究室</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">ETF / 行业配置</span>
+                  <span class="card-pill">中长期</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              从行业与资产配置角度看 ETF，更符合你和你老婆偏稳健的组合思路。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+
+          <a class="card" href="https://t.me/ebookscn" target="_blank" rel="noopener noreferrer">
+            <div class="card-top">
+              <div class="icon-pill book">
+                <svg viewBox="0 0 24 24">
+                  <path d="M7.5 6.5h5.5a2 2 0 0 1 2 2v8H9.5a2 2 0 0 0-2-2z" fill="#111827" />
+                  <path d="M16.5 6.5h-3.5a2 2 0 0 0-2 2v8h5.5a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2z" fill="#4b5563" />
+                </svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="card-title">电子书公开资料库</div>
+                <div class="card-badge-row">
+                  <span class="card-tag">IT / 管理 / 工具书</span>
+                  <span class="card-pill">学习</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">
+              整理公开电子书资源，你可以挑运维、安全、管理等方向自学。
+            </div>
+            <div class="card-link-hint">
+              <span>TG</span>
+              <svg viewBox="0 0 24 24">
+                <path d="M9 5h8v8" />
+                <path d="M7 17 17 7" />
+              </svg>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="brand">
+        <div class="brand-logo"></div>
+        <div>
+          <div class="brand-text-main">Pinoke</div>
+          <div style="font-size:10px;opacity:.8;">Telegram 频道导航 · 私用收藏版</div>
+        </div>
+      </div>
+      <div class="hint">
+        <span>建议：在浏览器中“添加到主屏幕”便于随时打开</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    document.querySelectorAll('[data-toggle]').forEach(function (header) {
+      header.addEventListener('click', function () {
+        var cat = header.closest('[data-category]');
+        var body = cat.querySelector('.category-body');
+        header.classList.toggle('open');
+        if (body.style.display === 'none') {
+          body.style.display = '';
+        } else if (!body.style.display) {
+          // default is visible → hide
+          body.style.display = 'none';
+        } else {
+          body.style.display = '';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
